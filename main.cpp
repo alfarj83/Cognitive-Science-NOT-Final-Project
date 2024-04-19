@@ -4,7 +4,9 @@
 #include <fstream>
 #include <iostream>
 #include <list>
+#include <string>
 #include <vector>
+#include <map>
 
 
 // A simple class to represent a point location.  It only has a
@@ -108,7 +110,11 @@ void print_grid(const std::vector<std::vector<GRID_STATUS> > & blocked_grid,
 }
 
 bool correctAnswer(int x, int y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
-    
+
+}
+
+bool wrongAnswer(int x, int y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
+  
 }
 
 bool currentPath(int x, int y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
@@ -133,5 +139,9 @@ int main(int argc, char* argv[]) {
   int start_x, start_y;
   read_grid(blocked_grid, start_x, start_y);
   print_grid(blocked_grid, start_x, start_y);
+
+  std::vector<std::string> realWords = { }
+  std::vector<std::string> pseudoWords = {}
+  std::map<std::string, int> reactionTimes;
   return 0;
 }
