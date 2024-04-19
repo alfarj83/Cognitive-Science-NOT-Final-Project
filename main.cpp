@@ -140,8 +140,13 @@ int main(int argc, char* argv[]) {
   read_grid(blocked_grid, start_x, start_y);
   print_grid(blocked_grid, start_x, start_y);
 
-  std::vector<std::string> realWords = { };
-  std::vector<std::string> pseudoWords = { };
+  std::ifstream inputFile("MALD1_ItemData.txt");
+  std::string info;
+  while (std::getline(inputFile, info)) {
+    
+  }
+  //std::vector<std::string> realWords = { };
+  //std::vector<std::string> pseudoWords = { };
   std::map<std::string, int> reactionTimes;
   return 0;
 }
