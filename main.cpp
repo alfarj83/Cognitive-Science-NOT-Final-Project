@@ -1,3 +1,4 @@
+/*
 // Starting code for Checkpoints 2 and 3.  This includes
 // functions to read the grid and to output it.
 
@@ -147,6 +148,41 @@ int main(int argc, char* argv[]) {
   }
   //std::vector<std::string> realWords = { };
   //std::vector<std::string> pseudoWords = { };
-  std::map<std::string, int> reactionTimes;
+  std::map<std::string, double> reactionTimes;
   return 0;
+}
+*/
+
+#include <iostream>
+#include <thread>
+#include <chrono>
+#include <mutex>
+#include <condition_variable>
+using namespace std;
+condition_variable cv;
+
+int value;
+
+void read_value() {
+    cin >> value;
+    cv.notify_one();
+}
+
+int main()
+{
+    cout << "Please enter the input: ";
+    thread th(read_value);
+
+    mutex mtx;
+    unique_lock<mutex> lck(mtx);
+    while (cv.wait_for(lck, chrono::seconds(2)) == cv_status::timeout)
+    {
+        cout << "\nTime-Out: 2 second:";
+        cout << "\nPlease enter the input:";
+    }
+    cout << "You entered: " << value << '\n';
+
+    th.join();
+
+    return 0;
 }
