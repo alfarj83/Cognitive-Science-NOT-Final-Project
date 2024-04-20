@@ -1,52 +1,20 @@
-/*
-// Starting code for Checkpoints 2 and 3.  This includes
-// functions to read the grid and to output it.
-
 #include <fstream>
 #include <iostream>
 #include <list>
 #include <string>
 #include <vector>
-#include <map>
+#include <unordered_map>
+#include <chrono>
+#include <cctype>
 
-
-// A simple class to represent a point location.  It only has a
-// constructor and a two public member variables.  This is one of the
-// few times that you are allowed to use non-private member variables.
-
+//point object class
 class Point {
 public:
   Point(int x0, int y0) : x(x0), y(y0) {}
   int x,y;
 };
 
-
-// NOTE: We could use a boolean (true/false) to represent whether each
-// cell of the grid was blocked or open.  This would be the minimal
-// representation for memory.
-
-// However, debuggers (both traditional and memory debuggers) might
-// not be able to help debug errors with vectors of booleans, if they
-// are efficiently packed by a clever STL implementation.  So instead
-// we use an enum, to improve readability, and to ensure that the
-// status of each grid cell is stored as an integer avoiding debugger
-// confusion during development.
-
-
-enum GRID_STATUS { GRID_CLEAR, GRID_BLOCKED, GRID_PATH};
-
-
-// Input the grid and the start location.  The input is a sequence of
-// x y locations, terminated by x==0 and y==0.  The last input, which
-// follows 0 0 input, is the start location.
-//
-// The grid is represented as a 2d vector of GRID_STATUS, with each location
-// that is blocked --- meaning that no path can go through --- being
-// represented by the value GRID_BLOCKED.  The grid is large enough to
-// include all blocked points and include the starting location.  The
-// first coordinate of the vector of vectors is the x coordinate, and
-// the second is the y coordinate.  The format of the input is
-// specified in the lab handout.
+enum GRID_STATUS { GRID_CLEAR, GRID_BLOCKED, CURRENT_POINT};
 
 void read_grid(std::vector<std::vector<GRID_STATUS> >& blocked_grid,
 	       int& start_x, int& start_y) {
@@ -84,10 +52,6 @@ void read_grid(std::vector<std::vector<GRID_STATUS> >& blocked_grid,
   }
 }
 
-
-// Output the grid to cout.  The form of the output is explained in
-// the cout statement below.
-
 void print_grid(const std::vector<std::vector<GRID_STATUS> > & blocked_grid,
                 unsigned int start_x, unsigned int start_y) {
 
@@ -99,10 +63,10 @@ void print_grid(const std::vector<std::vector<GRID_STATUS> > & blocked_grid,
     for (unsigned int x=0; x<blocked_grid.size(); ++x) {
       if (x == start_x && y == start_y)
         std::cout << " S";
+      else if (blocked_grid[x][y] == CURRENT_POINT)
+        std::cout << " C";
       else if (blocked_grid[x][y] == GRID_BLOCKED)
         std::cout << " X";
-      else if (blocked_grid[x][y] == GRID_PATH)
-        std::cout << " $"; 
       else
         std::cout << " .";
     }
@@ -110,79 +74,64 @@ void print_grid(const std::vector<std::vector<GRID_STATUS> > & blocked_grid,
   }
 }
 
-bool correctAnswer(int x, int y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
+void correctAnswer(int x, int y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
+  std::cout << "Pick where you wanna go! (Write up, down, left, or right) ";
+  std::string direction;
+  std::cin >> direction;
 
-}
-
-bool wrongAnswer(int x, int y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
-  
-}
-
-bool currentPath(int x, int y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
-    if (x==0 && y==0) {
-        blocked_grid[x][y] = GRID_PATH;
-        return true;
-    }
-    if ((x<0 || y < 0) || blocked_grid[x][y] != GRID_CLEAR) {
-        return false;
-    }
-
-    blocked_grid[x][y] = GRID_PATH;
-    if (currentPath(x-1,y,blocked_grid) || currentPath(x, y-1, blocked_grid)) {
-        return true;
-    }
-    blocked_grid[x][y] = GRID_CLEAR;
-    return false;
-}
-
-int main(int argc, char* argv[]) {
-  std::vector<std::vector<GRID_STATUS> > blocked_grid;
-  int start_x, start_y;
-  read_grid(blocked_grid, start_x, start_y);
-  print_grid(blocked_grid, start_x, start_y);
-
-  std::ifstream inputFile("MALD1_ItemData.txt");
-  std::string info;
-  while (std::getline(inputFile, info)) {
-    
+  //turns all characters into lowercase
+  for (char &c : direction) {
+    c = std::tolower(c);
   }
-  //std::vector<std::string> realWords = { };
-  //std::vector<std::string> pseudoWords = { };
-  std::map<std::string, double> reactionTimes;
-  return 0;
-}
-*/
 
-#include <iostream>
-#include <thread>
-#include <chrono>
-#include <mutex>
-#include <condition_variable>
-using namespace std;
-condition_variable cv;
-
-int value;
-
-void read_value() {
-    cin >> value;
-    cv.notify_one();
-}
-
-int main()
-{
-    cout << "Please enter the input: ";
-    thread th(read_value);
-
-    mutex mtx;
-    unique_lock<mutex> lck(mtx);
-    while (cv.wait_for(lck, chrono::seconds(2)) == cv_status::timeout)
-    {
-        cout << "\nTime-Out: 2 second:";
-        cout << "\nPlease enter the input:";
+  //checks if input is valid
+  if (direction == "up") {
+    int newY = y - 1;
+    if (newY < 5 && newY >= 0 && blocked_grid[x][newY] != GRID_BLOCKED) {
+      blocked_grid[x][y] = GRID_CLEAR;
+      blocked_grid[x][newY] = CURRENT_POINT;
     }
-    cout << "You entered: " << value << '\n';
+  } else if (direction == "down") {
+    int newY = y + 1;
+    if (newY < 5 && newY >= 0 && blocked_grid[x][newY] != GRID_BLOCKED) {
+      blocked_grid[x][y] = GRID_CLEAR;
+      blocked_grid[x][newY] = CURRENT_POINT;
+    }
+  } else if (direction == "left") {
+    int newX = x - 1;
+    if (newX < 5 && newX >= 0 && blocked_grid[newX][y] != GRID_BLOCKED) {
+      blocked_grid[x][y] = GRID_CLEAR;
+      blocked_grid[newX][y] = CURRENT_POINT;
+    }
+  } else if (direction == "right") {
+    int newX = x + 1;
+    if (newX < 5 && newX >= 0 && blocked_grid[newX][y] != GRID_BLOCKED) {
+      blocked_grid[x][y] = GRID_CLEAR;
+      blocked_grid[newX][y] = CURRENT_POINT;
+    }
+  } else {
+    std::cout << "Not valid direction. Please try again." << std::endl;
+    correctAnswer(x, y, blocked_grid);
+  }
+}
 
-    th.join();
+//if they get a wrong answer, return to start
+bool wrongAnswer(int x, int y, unsigned int start_x, unsigned int start_y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
+  std::cout << "Wrong answer! You've gone back to the start." << std::endl;
+  blocked_grid[x][y] = GRID_CLEAR;
+  blocked_grid[start_x][start_y] = CURRENT_POINT;
+}
 
-    return 0;
+int main() {
+  using Clock = std::chrono::high_resolution_clock;
+
+  std::cout << "Enter your name: ";
+  std::string name;
+  auto start = Clock::now();
+  std::cin >> name;
+
+  auto end = Clock::now();
+  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+
+  std::cout << "Your input took " << ms << " milliseconds" << std::endl;
 }
