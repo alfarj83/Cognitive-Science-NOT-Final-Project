@@ -10,11 +10,7 @@
 #include <random>
 
 //starting positions
-<<<<<<< Updated upstream
 unsigned int START_X = 2, START_Y = 4;
-=======
-unsigned int START_X = 4, START_Y = 2;
->>>>>>> Stashed changes
 //grid size
 int MAX_X = 4, MAX_Y = 4;
 //board states
@@ -92,7 +88,6 @@ void print_grid(std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
 }
 
 //puts all words (real words and pseudowords alike) into map
-<<<<<<< Updated upstream
 std::vector<std::pair<std::string, bool> > parseWords(std::unordered_map<std::string, long>& wordFreqs) {
   std::vector<std::pair<std::string, bool> > allWords;
   std::ifstream wordsFile("allWords.txt");
@@ -102,15 +97,6 @@ std::vector<std::pair<std::string, bool> > parseWords(std::unordered_map<std::st
     if (validity == "TRUE") {
       allWords.push_back(std::pair<std::string, bool>(currentWord, true));
       wordFreqs[currentWord] = freq;
-=======
-std::vector<std::pair<std::string, bool> > parseWords() {
-  std::vector<std::pair<std::string, bool> > allWords;
-  std::ifstream wordsFile("allWords.txt");
-  std::string word, currentWord, validity;
-  while(wordsFile >> currentWord >> validity) {
-    if (validity == "TRUE") {
-      allWords.push_back(std::pair<std::string, bool>(currentWord, true));
->>>>>>> Stashed changes
     } else {
       allWords.push_back(std::pair<std::string, bool>(currentWord, false));
     }
@@ -186,13 +172,10 @@ void wrongAnswer(Point& currentPos, std::vector<std::vector<GRID_STATUS> > & blo
   std::cout << "Wrong answer! You've gone back to the start." << std::endl;
   blocked_grid[currentPos.x][currentPos.y] = GRID_CLEAR;
   blocked_grid[START_X][START_Y] = CURRENT_POINT;
-<<<<<<< Updated upstream
   currentPos = getNewPoint(START_X, START_Y);
 
   std::cout << "\nCurrent grid:\n";
   print_grid(blocked_grid);
-=======
->>>>>>> Stashed changes
 }
 
 double getResponseTime(std::string& answer) {
@@ -207,10 +190,7 @@ double getResponseTime(std::string& answer) {
 
   return ms / 1000.0; // Convert to seconds
 }
-<<<<<<< Updated upstream
 
-=======
->>>>>>> Stashed changes
 bool isValidAnswer(std::string& ans) {
   if (ans == "1" || ans == "0") {
     return true;
@@ -221,7 +201,6 @@ bool isValidAnswer(std::string& ans) {
 int main() {
   //starting description
   std::cout << "Welcome to our NOT final project!\nWe\'ve designed a little game to test your lexical abilities.\n";
-<<<<<<< Updated upstream
   std::cout << "We\'ll give you a word and you\'ll write \'1\' if it\'s a real word, and \'0\' if it\'s a fake one.\n";
   std::cout << "The correct answer will let you progress in the maze, while the wrong answer makes your restart, so be careful.\n";
   std::cout << "The game will keep going until you reach the end, so good luck!\n";
@@ -234,15 +213,6 @@ int main() {
   read_grid(blocked_grid);
   std::unordered_map<std::string, long> wordFreqs;
   std::vector<std::pair<std::string, bool> > allWords = parseWords(wordFreqs);
-=======
-  std::cout << "We\'ll give you a word and you\'ll write \'T\' if it\'s a real word, and \'F\' if it\'s a fake one.\n";
-  std::cout << "The correct answer will let you progress in the maze, while the wrong answer makes your restart, so be careful.\n";
-  std::cout << "You'll have [] minutes to get to the end of the maze, so good luck!\n";
-
-  std::vector<std::vector<GRID_STATUS> > blocked_grid;
-  read_grid(blocked_grid);
-  std::vector<std::pair<std::string, bool> > allWords = parseWords();
->>>>>>> Stashed changes
 
   //prints starting grid
   std::cout << "Here is the grid with the origin in the upper left corner, x increasing \n"
@@ -254,15 +224,12 @@ int main() {
   Point currentPos = getNewPoint(START_X, START_Y);
   Point endPos = getNewPoint(0, 0);
 
-<<<<<<< Updated upstream
   //keeps track of total response time
   double totalResponseTime = 0;
 
   //to calculate accuracy
   double wordsGiven = 0, correct = 0;
 
-=======
->>>>>>> Stashed changes
   while (currentPos != endPos) {
     //Generates random number
     std::mt19937 rng(std::random_device{}());
@@ -274,15 +241,10 @@ int main() {
     std::pair<std::string, bool> testWord = allWords[random_int];
     //answer that the player gives
     std::string answer;
-<<<<<<< Updated upstream
     ++wordsGiven;
     std::cout << testWord.first << std::endl;
     double responseTime = getResponseTime(answer);
     totalResponseTime += responseTime;
-=======
-    std::cout << testWord.first << std::endl;
-    double responseTime = getResponseTime(answer);
->>>>>>> Stashed changes
     std::cout << "Response time: " << responseTime << " seconds\n";
 
     //checks if answer is valid
@@ -290,19 +252,13 @@ int main() {
       //if the player answers that the word is real
       if (answer == "1") {
         if (testWord.second == true) {
-<<<<<<< Updated upstream
           ++correct;
-=======
->>>>>>> Stashed changes
           correctAnswer(currentPos, blocked_grid);
         } else { wrongAnswer(currentPos, blocked_grid); }
       //if the player answers that the word is fake
       } else if (answer == "0") {
         if (testWord.second == false) {
-<<<<<<< Updated upstream
           ++correct;
-=======
->>>>>>> Stashed changes
           correctAnswer(currentPos, blocked_grid);
         } else { wrongAnswer(currentPos, blocked_grid); }
       }
@@ -311,7 +267,6 @@ int main() {
       std::cout << "Answer not valid. Try again.\n";
     }
   }
-<<<<<<< Updated upstream
 
   std::cout << "Hooray! You finished! Here are your stats:\n";
   //accuracy: ratio of total words to correct answers given
@@ -322,7 +277,3 @@ int main() {
   std::cout << "It took you on average " << avgResponseTime << " seconds to respond to each question!\n";
   return 0;
 }
-=======
-  return 0;
-}
->>>>>>> Stashed changes
