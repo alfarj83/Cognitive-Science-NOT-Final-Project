@@ -76,6 +76,8 @@ void print_grid(std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
     for (unsigned int x=0; x<blocked_grid.size(); ++x) {
       if (x == START_X && y == START_Y)
         std::cout << " S";
+      else if (x == 0 && y == 0)
+        std::cout << " E";
       else if (blocked_grid[x][y] == CURRENT_POINT)
         std::cout << " C";
       else if (blocked_grid[x][y] == GRID_BLOCKED)
@@ -203,7 +205,7 @@ int main() {
   std::cout << "Welcome to our NOT final project!\nWe\'ve designed a little game to test your lexical abilities.\n";
   std::cout << "We\'ll give you a word and you\'ll write \'1\' if it\'s a real word, and \'0\' if it\'s a fake one.\n";
   std::cout << "The correct answer will let you progress in the maze, while the wrong answer makes your restart, so be careful.\n";
-  std::cout << "The game will keep going until you reach the end, so good luck!\n";
+  std::cout << "The game will keep going until you reach the end (marked the the letter \'E\'), so good luck!\n";
 
   std::string ready;
   std::cout << "Press any letter to play ";
