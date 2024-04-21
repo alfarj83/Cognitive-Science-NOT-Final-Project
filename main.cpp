@@ -6,39 +6,56 @@
 #include <unordered_map>
 #include <chrono>
 #include <cctype>
+#include <algorithm>
+#include <random>
 
 //point object class
 class Point {
 public:
   Point(int x0, int y0) : x(x0), y(y0) {}
   int x,y;
+
+  bool operator==(const Point &other) const {
+        return x == other.x && y == other.y;
+    }
+    
+    Point& moveBackward() {
+        if (x > 0) --x;
+        if (y > 0) --y;
+        return *this;
+    }
 };
 
 enum GRID_STATUS { GRID_CLEAR, GRID_BLOCKED, CURRENT_POINT};
 
 void read_grid(std::vector<std::vector<GRID_STATUS> >& blocked_grid,
-	       int& start_x, int& start_y) {
+           int& start_x, int& start_y) {
 
   // Read the x y locations into a list of Points.  Keep track of the
   // max x and max y values so that the size of the grid can be
   // determined.
+  int x, y;
   int max_x = 4, max_y = 4;  // keep track of the max coordinate values
-  std::list<Point> blocked_points;
-  blocked_points.push_back(Point(2,1));
-  blocked_points.push_back(Point(3,1));
-  blocked_points.push_back(Point(1,2));
-  blocked_points.push_back(Point(3,2));
-  blocked_points.push_back(Point(0,3));
-  blocked_points.push_back(Point(1,3));
-  blocked_points.push_back(Point(0,4));
-  blocked_points.push_back(Point(1,4));
-  blocked_points.push_back(Point(3,4));
-  blocked_points.push_back(Point(4,4));
+  std::list<Point> blocked_points = {};
+    blocked_points.push_back(Point(2,1));
+    blocked_points.push_back(Point(3,1));
+    blocked_points.push_back(Point(1,2));
+    blocked_points.push_back(Point(3,2));
+    blocked_points.push_back(Point(0,3));
+    blocked_points.push_back(Point(1,3));
+    blocked_points.push_back(Point(0,4));
+    blocked_points.push_back(Point(1,4));
+    blocked_points.push_back(Point(3,4));
+    blocked_points.push_back(Point(4,4));
+  
 
   // Now that a 0 0 location has been read, read the start location.
   // If this is beyond the max x or y value then update these values.
+  // istr >> start_x >> start_y;
   start_x = 2;
   start_y = 4;
+  if (start_x > max_x) max_x = start_x;
+  if (start_y > max_y) max_y = start_y;
 
   // Make a vector of vectors with all entries marked clear.
   std::vector<GRID_STATUS> one_row_of_ys(max_y+1, GRID_CLEAR);
@@ -53,9 +70,10 @@ void read_grid(std::vector<std::vector<GRID_STATUS> >& blocked_grid,
 }
 
 void print_grid(const std::vector<std::vector<GRID_STATUS> > & blocked_grid,
-                unsigned int start_x, unsigned int start_y) {
+                unsigned int start_x, unsigned int start_y,
+                const std::list<Point>& path = std::list<Point>()) {
 
-  std::cout << "Here is the grid with the origin in the upper left corner, x increasing \n"
+    std::cout << "Here is the grid with the origin in the upper left corner, x increasing \n"
             << "horizontally and y increasing down the screen.  An 'X' represents a blocked\n"
             << "location and the 'S' represents the starting location.\n\n";
   
@@ -70,8 +88,6 @@ void print_grid(const std::vector<std::vector<GRID_STATUS> > & blocked_grid,
       else
         std::cout << " .";
     }
-    std::cout << std::endl;
-  }
 }
 
 void correctAnswer(int x, int y, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
@@ -122,16 +138,113 @@ bool wrongAnswer(int x, int y, unsigned int start_x, unsigned int start_y, std::
   blocked_grid[start_x][start_y] = CURRENT_POINT;
 }
 
-int main() {
-  using Clock = std::chrono::high_resolution_clock;
+bool findPath(const std::vector<std::vector<GRID_STATUS> >& blocked_grid, int x, int y, std::list<Point>& path) {
+    // Base Case: If we're at the origin, add this point to the path
+    if (x == 0 && y == 0) {
+        path.push_front(Point(x, y));
+        return true;
+    }
 
-  std::cout << "Enter your name: ";
-  std::string name;
-  auto start = Clock::now();
-  std::cin >> name;
+    // If the current cell is blocked, no paths will pass through it
+    if (blocked_grid[x][y] == GRID_BLOCKED) {
+        return false;
+    }
 
-  auto end = Clock::now();
-  auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    // Try moving left
+    if (x > 0 && findPath(blocked_grid, x-1, y, path)) {
+        path.push_front(Point(x, y));
+        return true;
+    }
 
-  std::cout << "Your input took " << ms << " milliseconds" << std::endl;
+    // Try moving down
+    if (y > 0 && findPath(blocked_grid, x, y-1, path)) {
+        path.push_front(Point(x, y));
+        return true;
+    }
+
+    return false;
 }
+
+bool confirmPathValidity(const std::list<Point>& path) {
+    // Display the path
+    std::cout << "Proposed path:\n";
+    for (const Point& point : path) {
+        std::cout << "(" << point.x << ", " << point.y << ") ";
+    }
+    std::cout << "\nIs this path valid? (yes/no): ";
+
+    // Get user confirmation
+    std::string response;
+    std::cin >> response;
+    std::transform(response.begin(), response.end(), response.begin(),
+                   [](unsigned char c) { return std::tolower(c); });
+
+    return (response == "yes");
+}
+
+
+double getResponseTime() {
+    using namespace std::chrono;
+
+    std::cout << "Press any key to start the timer...";
+    std::cin.ignore(); // Wait for user input
+    time_point<high_resolution_clock> start = high_resolution_clock::now();
+
+    std::cout << "Is 2+2=4? (1 for yes, 0 for no): ";
+    bool answer;
+    std::cin >> answer;
+
+    time_point<high_resolution_clock> stop = high_resolution_clock::now();
+    milliseconds duration = duration_cast<milliseconds>(stop - start);
+
+    return duration.count() / 1000.0; // Convert to seconds
+}
+
+
+Point getNewPoint() {
+    int x, y;
+    std::cout << "Enter the x coordinate of the new point: ";
+    std::cin >> x;
+    std::cout << "Enter the y coordinate of the new point: ";
+    std::cin >> y;
+    return Point(x, y);
+}
+
+
+bool canMoveTo(const Point& pos, const std::vector<std::vector<GRID_STATUS>>& blocked_grid) {
+    if (pos.x < 0 || pos.y < 0 || pos.x >= blocked_grid.size() || pos.y >= blocked_grid[0].size()) return false;
+    return blocked_grid[pos.x][pos.y] == GRID_CLEAR;
+}
+
+int main() {
+    std::vector<std::vector<GRID_STATUS>> blocked_grid;
+    int start_x, start_y;
+    start_x = 2;
+    start_y = 4;
+    read_grid(blocked_grid, start_x, start_y);
+    print_grid(blocked_grid, start_x, start_y);
+
+    std::list<Point> path;
+    if (findPath(blocked_grid, start_x, start_y, path)) {
+        print_grid(blocked_grid, start_x, start_y, path);
+        if (confirmPathValidity(path)) {
+            std::cout << "The path is confirmed as valid.\n";
+            Point newPoint = getNewPoint();
+            addPointToPath(path, newPoint);
+            std::cout << "Updated path with the new point:\n";
+            for (const Point& p : path) {
+                std::cout << "(" << p.x << ", " << p.y << ") ";
+            }
+            std::cout << std::endl;
+        } else {
+            std::cout << "The path is not valid.\n";
+        }
+    } else {
+        std::cout << "No path found from (" << start_x << ", " << start_y << ") to the origin.\n";
+    }
+    
+    double responseTime;
+    responseTime = getResponseTime();
+    std::cout << "Response time: " << responseTime << " seconds\n";
+
+    return 0;
