@@ -272,4 +272,3 @@ int main() {
     std::cout << "Response time: " << responseTime << " seconds\n";
 
     return 0;
-}
