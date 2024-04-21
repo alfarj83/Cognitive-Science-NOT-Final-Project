@@ -10,7 +10,7 @@
 #include <random>
 
 //starting positions
-unsigned int START_X = 4, START_Y = 2;
+unsigned int START_X = 2, START_Y = 4;
 //grid size
 int MAX_X = 4, MAX_Y = 4;
 //board states
