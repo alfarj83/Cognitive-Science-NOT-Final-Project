@@ -186,6 +186,7 @@ double getResponseTime(std::string& answer) {
 
   return ms / 1000.0; // Convert to seconds
 }
+
 bool isValidAnswer(std::string& ans) {
   if (ans == "1" || ans == "0") {
     return true;
@@ -215,6 +216,12 @@ int main() {
   Point currentPos = getNewPoint(START_X, START_Y);
   Point endPos = getNewPoint(0, 0);
 
+  //keeps track of total response time
+  double totalResponseTime = 0;
+
+  //to calculate accuracy
+  int wordsGiven = 0, correctAnswers = 0;
+
   while (currentPos != endPos) {
     //Generates random number
     std::mt19937 rng(std::random_device{}());
@@ -228,6 +235,7 @@ int main() {
     std::string answer;
     std::cout << testWord.first << std::endl;
     double responseTime = getResponseTime(answer);
+    totalResponseTime += responseTime;
     std::cout << "Response time: " << responseTime << " seconds\n";
 
     //checks if answer is valid
@@ -250,7 +258,8 @@ int main() {
   }
 
   std::cout << "Hooray! You finished! Here are your stats:\n";
-
+  //accuracy: ratio of total words to correct answers given
+  //average response time: all response times
 
   return 0;
 }
