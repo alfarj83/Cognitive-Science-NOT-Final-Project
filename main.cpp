@@ -172,6 +172,10 @@ void wrongAnswer(Point& currentPos, std::vector<std::vector<GRID_STATUS> > & blo
   std::cout << "Wrong answer! You've gone back to the start." << std::endl;
   blocked_grid[currentPos.x][currentPos.y] = GRID_CLEAR;
   blocked_grid[START_X][START_Y] = CURRENT_POINT;
+  currentPos = getNewPoint(START_X, START_Y);
+
+  std::cout << "\nCurrent grid:\n";
+  print_grid(blocked_grid);
 }
 
 double getResponseTime(std::string& answer) {
@@ -197,9 +201,13 @@ bool isValidAnswer(std::string& ans) {
 int main() {
   //starting description
   std::cout << "Welcome to our NOT final project!\nWe\'ve designed a little game to test your lexical abilities.\n";
-  std::cout << "We\'ll give you a word and you\'ll write \'T\' if it\'s a real word, and \'F\' if it\'s a fake one.\n";
+  std::cout << "We\'ll give you a word and you\'ll write \'1\' if it\'s a real word, and \'0\' if it\'s a fake one.\n";
   std::cout << "The correct answer will let you progress in the maze, while the wrong answer makes your restart, so be careful.\n";
-  std::cout << "You'll have [] minutes to get to the end of the maze, so good luck!\n";
+  std::cout << "The game will keep going until you reach the end, so good luck!\n";
+
+  std::string ready;
+  std::cout << "Press any letter to play ";
+  std::cin >> ready;
 
   std::vector<std::vector<GRID_STATUS> > blocked_grid;
   read_grid(blocked_grid);
@@ -220,7 +228,7 @@ int main() {
   double totalResponseTime = 0;
 
   //to calculate accuracy
-  int wordsGiven = 0, correctAnswers = 0;
+  double wordsGiven = 0, correct = 0;
 
   while (currentPos != endPos) {
     //Generates random number
@@ -233,6 +241,7 @@ int main() {
     std::pair<std::string, bool> testWord = allWords[random_int];
     //answer that the player gives
     std::string answer;
+    ++wordsGiven;
     std::cout << testWord.first << std::endl;
     double responseTime = getResponseTime(answer);
     totalResponseTime += responseTime;
@@ -243,11 +252,13 @@ int main() {
       //if the player answers that the word is real
       if (answer == "1") {
         if (testWord.second == true) {
+          ++correct;
           correctAnswer(currentPos, blocked_grid);
         } else { wrongAnswer(currentPos, blocked_grid); }
       //if the player answers that the word is fake
       } else if (answer == "0") {
         if (testWord.second == false) {
+          ++correct;
           correctAnswer(currentPos, blocked_grid);
         } else { wrongAnswer(currentPos, blocked_grid); }
       }
@@ -259,7 +270,10 @@ int main() {
 
   std::cout << "Hooray! You finished! Here are your stats:\n";
   //accuracy: ratio of total words to correct answers given
-  //average response time: all response times
-
+  //average response time: all response times / number of words given
+  double accuracy = (correct / wordsGiven) * 100;
+  double avgResponseTime = totalResponseTime / wordsGiven;
+  std::cout << "You had " << accuracy << "% accuracy!\n";
+  std::cout << "It took you on average " << avgResponseTime << " seconds to respond to each question!\n";
   return 0;
 }
