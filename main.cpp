@@ -114,7 +114,7 @@ bool canMoveTo(Point& pos, std::vector<std::vector<GRID_STATUS> >& blocked_grid)
 
 //in the case of a correct answer;
 void correctAnswer(Point& pos, std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
-  std::cout << "Pick where you wanna go! (Write up, down, left, or right) ";
+  std::cout << "Pick where you wanna go! (Type up, down, left, or right) ";
   std::string direction;
   std::cin >> direction;
 
@@ -204,7 +204,7 @@ int main() {
   //starting description
   std::cout << "Welcome to our NOT final project!\nWe\'ve designed a little game to test your lexical abilities.\n";
   std::cout << "We\'ll give you a word and you\'ll write \'1\' if it\'s a real word, and \'0\' if it\'s a fake one.\n";
-  std::cout << "The correct answer will let you progress in the maze, while the wrong answer makes your restart, so be careful.\n";
+  std::cout << "The correct answer will let you progress in the maze, while the wrong answer makes you restart, so be careful.\n";
   std::cout << "The game will keep going until you reach the end (marked the the letter \'E\'), so good luck!\n";
 
   std::string ready;
