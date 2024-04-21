@@ -88,13 +88,15 @@ void print_grid(std::vector<std::vector<GRID_STATUS> > & blocked_grid) {
 }
 
 //puts all words (real words and pseudowords alike) into map
-std::vector<std::pair<std::string, bool> > parseWords() {
+std::vector<std::pair<std::string, bool> > parseWords(std::unordered_map<std::string, long>& wordFreqs) {
   std::vector<std::pair<std::string, bool> > allWords;
   std::ifstream wordsFile("allWords.txt");
   std::string word, currentWord, validity;
-  while(wordsFile >> currentWord >> validity) {
+  long freq = 0;
+  while(wordsFile >> currentWord >> validity >> freq) {
     if (validity == "TRUE") {
       allWords.push_back(std::pair<std::string, bool>(currentWord, true));
+      wordFreqs[currentWord] = freq;
     } else {
       allWords.push_back(std::pair<std::string, bool>(currentWord, false));
     }
@@ -200,7 +202,8 @@ int main() {
 
   std::vector<std::vector<GRID_STATUS> > blocked_grid;
   read_grid(blocked_grid);
-  std::vector<std::pair<std::string, bool> > allWords = parseWords();
+  std::unordered_map<std::string, long> wordFreqs;
+  std::vector<std::pair<std::string, bool> > allWords = parseWords(wordFreqs);
 
   //prints starting grid
   std::cout << "Here is the grid with the origin in the upper left corner, x increasing \n"
@@ -245,5 +248,9 @@ int main() {
       std::cout << "Answer not valid. Try again.\n";
     }
   }
+
+  std::cout << "Hooray! You finished! Here are your stats:\n";
+
+
   return 0;
 }
