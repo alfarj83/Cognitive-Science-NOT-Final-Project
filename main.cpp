@@ -203,7 +203,7 @@ bool isValidAnswer(std::string& ans) {
 int main() {
   //starting description
   std::cout << "Welcome to our NOT final project!\nWe\'ve designed a little game to test your lexical abilities.\n";
-  std::cout << "You will be given a maze, and your goal is to reach the end. \'S\' marks the starting point, while \'C\' marks your current position\n";
+  std::cout << "You will be given a maze, and your goal is to reach the end. \'S\' marks the starting point, while \'C\' marks your current position.\n";
   std::cout << "We\'ll give you a word and you\'ll write \'1\' if it\'s a real word, and \'0\' if it\'s a fake one.\n";
   std::cout << "The correct answer will let you progress in the maze, while the wrong answer makes you restart, so be careful.\n";
   std::cout << "The game will keep going until you reach the end (marked the the letter \'E\'), so good luck!\n";
